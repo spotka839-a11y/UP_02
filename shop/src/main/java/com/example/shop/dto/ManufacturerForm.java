@@ -5,14 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CategoryForm {
-    private Integer id;
+public class ManufacturerForm {
 
     @NotBlank(message = "Название обязательно")
     @Size(min = 2, max = 200, message = "Название от 2 до 200 символов")
     private String title;
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

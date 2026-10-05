@@ -20,7 +20,7 @@ public class ProductForm {
 
     @NotNull(message = "Цена обязательна")
     @DecimalMin(value = "0.01", message = "Цена должна быть больше 0")
-    private BigDecimal сost;
+    private BigDecimal cost;
 
     @NotNull(message = "Количество обязательно")
     @Min(value = 0, message = "Количество не может быть отрицательным")
@@ -33,4 +33,5 @@ public class ProductForm {
     private Integer categoryId;
 
     private MultipartFile photoFile;
+    
 }

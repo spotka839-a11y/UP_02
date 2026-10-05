@@ -1,7 +1,6 @@
 package com.example.shop.entity;
 
-import com.example.shop.Manufacturer;
-import com.example.shop.UnitType;
+import com.example.shop.dto.ProductForm;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -49,4 +48,5 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unittype_id")
     private UnitType unitType;
+
 }
