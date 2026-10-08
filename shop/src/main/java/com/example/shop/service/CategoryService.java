@@ -1,15 +1,15 @@
 package com.example.shop.service;
 
-import com.example.shop.dto.CategoryForm;
 import com.example.shop.entity.Category;
 import com.example.shop.repository.CategoryRepository;
-import com.example.shop.util.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.shop.dto.CategoryForm;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Если у вас уже есть CategoryService — просто добавьте в него недостающие методы.
 @Service
 public class CategoryService {
 
@@ -19,16 +19,14 @@ public class CategoryService {
     public List<Category> findAll() {
         return categoryRepository.findAll();
     }
-    @Transactional
-    public Category updateFromForm(Integer id, CategoryForm form) {
-        Category category = findById(id);
-        category.setTitle(ValidationUtils.normalize(form.getTitle()));
+
+    public Category save(Category category) {
         return categoryRepository.save(category);
     }
 
-    @Transactional
     public void deleteById(Integer id) {
         categoryRepository.deleteById(id);
+        categoryRepository.flush(); // чтобы ошибка внешнего ключа возникла здесь, а не при коммите
     }
 
     public Category findById(Integer id) {
@@ -36,7 +34,10 @@ public class CategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("Категория не найдена: " + id));
     }
 
-    public Category save(Category category) {
-        return categoryRepository.save(category);
+    @Transactional
+    public void updateFromForm(Integer id, CategoryForm form) {
+        Category category = findById(id);
+        category.setTitle(form.getTitle());
+        categoryRepository.save(category);
     }
 }

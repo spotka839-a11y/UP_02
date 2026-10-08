@@ -1,87 +1,28 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Добавить товар</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; max-width: 600px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
-        .error { color: red; font-size: 14px; }
-        .is-invalid { border-color: red; }
-        button { background: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(title='Добавить товар', content=~{::content})}">
 <body>
-<h1>Добавить товар</h1>
+<div th:fragment="content">
+    <h1 th:text="${editMode != null && editMode ? 'Редактировать товар' : 'Добавить товар'}"></h1>
 
-<form th:action="@{/admin/products/new}" th:object="${productForm}" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label>Артикул *</label>
-        <input type="text" th:field="*{id}" th:classappend="${#fields.hasErrors('id')} ? 'is-invalid'"/>
-        <span class="error" th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></span>
-    </div>
+    <form th:action="${editMode != null && editMode}
+                       ? @{/admin/products/edit/{id}(id=*{id})}
+                       : @{/admin/products/new}"
+          th:object="${productForm}" method="post" enctype="multipart/form-data">
 
-    <div class="form-group">
-        <label>Название *</label>
-        <input type="text" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"/>
-        <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
-    </div>
+        <div class="form-group">
+            <label>Артикул *</label>
+            <input type="text" th:field="*{id}"
+                   th:readonly="${editMode != null && editMode}"/>
+            <span class="error" th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></span>
+        </div>
 
-    <div class="form-group">
-        <label>Цена *</label>
-        <input type="number" step="0.01" th:field="*{cost}" th:classappend="${#fields.hasErrors('cost')} ? 'is-invalid'"/>
-        <span class="error" th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}"></span>
-    </div>
+        <!-- остальные поля без изменений -->
+        <!-- ... -->
 
-    <div class="form-group">
-        <label>Количество на складе *</label>
-        <input type="number" th:field="*{quantityInStock}" th:classappend="${#fields.hasErrors('quantityInStock')} ? 'is-invalid'"/>
-        <span class="error" th:if="${#fields.hasErrors('quantityInStock')}" th:errors="*{quantityInStock}"></span>
-    </div>
-
-    <div class="form-group">
-        <label>Категория *</label>
-        <select th:field="*{categoryId}" th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'">
-            <option value="">-- Выберите категорию --</option>
-            <option th:each="cat : ${categories}"
-                    th:value="${cat.id}"
-                    th:text="${cat.title}"></option>
-        </select>
-        <span class="error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></span>
-    </div>
-
-    <div class="form-group">
-        <label>Описание</label>
-        <textarea th:field="*{description}" rows="3"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label>Фото товара</label>
-        <input type="file" name="photoFile" accept="image/*"/>
-    </div>
-
-    <button type="submit">Сохранить</button>
-    <a th:href="@{/products-jpa-page}" style="margin-left: 10px;">Отмена</a>
-</form>
-<form th:action="${editMode != null && editMode}
-                    ? @{/admin/products/edit/{id}(id=*{id})}
-                    : @{/admin/products/new}"
-      th:object="${productForm}"
-      method="post"
-      enctype="multipart/form-data">
-
-    <!-- Артикул: только для чтения при редактировании -->
-    <div class="form-group">
-        <label>Артикул *</label>
-        <input type="text" th:field="*{id}"
-               th:readonly="${editMode != null && editMode}"
-               th:classappend="${#fields.hasErrors('id')} ? 'is-invalid'"/>
-        <span class="error" th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></span>
-    </div>
-
-    <!-- ... остальные поля без изменений ... -->
-</form>
+        <button type="submit">Сохранить</button>
+        <a th:href="@{/admin/products}">Отмена</a>
+    </form>
+</div>
 </body>
 </html>

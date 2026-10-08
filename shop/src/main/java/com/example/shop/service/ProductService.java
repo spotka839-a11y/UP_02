@@ -6,11 +6,16 @@ import com.example.shop.entity.Product;
 import com.example.shop.repository.CategoryRepository;
 import com.example.shop.repository.ProductRepository;
 import com.example.shop.util.FileUtils;
+import com.example.shop.util.SecurityUtils;
 import com.example.shop.util.StringUtils;
 import com.example.shop.util.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -49,8 +54,10 @@ public class ProductService {
         // Используем утилиту для чтения файла
         product.setPhoto(FileUtils.readBytes(form.getPhotoFile()));
 
-        return productRepository.save(product);
+
+        return product;
     }
+
 
     @Transactional
     public Product updateFromForm(String id, ProductForm form) {
@@ -77,5 +84,37 @@ public class ProductService {
     @Transactional
     public void deleteById(String id) {
         productRepository.deleteById(id);
+    }
+    public List<Product> findPopular(int limit) {
+        return productRepository.findAll(PageRequest.of(0, limit)).getContent();
+    }
+    public Page<Product> findPage(Integer categoryId, String search, String sort, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, resolveSort(sort));
+        boolean hasSearch = search != null && !search.isBlank();
+
+        if (categoryId == null && !hasSearch) {
+            return productRepository.findAll(pageRequest);
+        }
+        if (categoryId == null) {
+            return productRepository.findByTitleContainingIgnoreCase(search.trim(), pageRequest);
+        }
+        if (!hasSearch) {
+            return productRepository.findByCategoryId(categoryId, pageRequest);
+        }
+        return productRepository.findByCategoryIdAndTitleContainingIgnoreCase(categoryId, search.trim(), pageRequest);
+    }
+
+    private Sort resolveSort(String sort) {
+        if (sort == null) {
+            return Sort.by("title").ascending();
+        }
+        return switch (sort) {
+            case "price_asc"  -> Sort.by("cost").ascending();
+            case "price_desc" -> Sort.by("cost").descending();
+            default           -> Sort.by("title").ascending();
+        };
+    }
+    public List<Product> searchByTitle(String query) {
+        return productRepository.findByTitleContainingIgnoreCase(query);
     }
 }
