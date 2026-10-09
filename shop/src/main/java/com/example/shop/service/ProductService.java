@@ -117,4 +117,7 @@ public class ProductService {
     public List<Product> searchByTitle(String query) {
         return productRepository.findByTitleContainingIgnoreCase(query);
     }
+    public Page<Product> findPage(int page, int size) {
+        return productRepository.findAll(PageRequest.of(page, size));
+    }
 }

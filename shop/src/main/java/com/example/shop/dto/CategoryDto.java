@@ -1,18 +1,10 @@
-package com.example.shop.entity;
+package com.example.shop.dto;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
-@Table(name = "status")
 @Data
-public class Status {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CategoryDto {
     private Integer id;
-
-    @Column(name = "title", nullable = false, length = 50)
     private String title;
 
     public Integer getId() {
